@@ -19,19 +19,36 @@ export async function getCategories(spreadsheetId: string) {
   const currentMonth = new Date().toLocaleString('default', { month: 'long' })
   
   try {
+    console.log('Fetching categories for month:', currentMonth)
+    console.log('Using spreadsheet ID:', spreadsheetId)
+    
     const response = await sheets.spreadsheets.values.get({
       auth,
       spreadsheetId,
       range: `${currentMonth}!B:B`,
     })
 
+    console.log('Raw response:', response.data)
+
     const values = response.data.values || []
+    console.log('Raw values:', values)
+    
     // Filter out "Category" and any empty values
-    return Array.from(new Set(values.flat()))
+    const categories = Array.from(new Set(values.flat()))
       .filter(Boolean)
       .filter(category => category !== 'Category')
+    
+    console.log('Filtered categories:', categories)
+    return categories
   } catch (error) {
     console.error('Error fetching categories:', error)
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      })
+    }
     return []
   }
 }
