@@ -12,7 +12,13 @@ export async function GET() {
     }
 
     const categories = await getCategories(spreadsheetId)
-    return NextResponse.json(categories)
+    return NextResponse.json(categories, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
   } catch (error) {
     console.error('Error fetching categories:', error)
     return NextResponse.json(
